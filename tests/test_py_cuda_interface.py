@@ -5,13 +5,7 @@ def test_python_can_call_cuda_kernel():
     import pycuda.driver as drv
     import numpy as np
     from pycuda.compiler import SourceModule
-    mod = SourceModule("""
-    __global__ void multiply_them(float *dest, float *a, float *b)
-    {
-        const int i = threadIdx.x;
-        dest[i] = a[i] * b[i];
-    }
-    """)
+    mod = SourceModule(open('tests/multiply_them.cu', 'r').read())
 
     multiply_them = mod.get_function('multiply_them')
 
