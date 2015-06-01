@@ -11,7 +11,7 @@ def load_video_from_file_name(filename):
     return cv2.VideoCapture(filename=file_path)
 
 
-def get_still_frame_from_video_capture(video_capture):
+def get_stereo_frame_from_video_capture(video_capture):
     return_value = video_capture.grab()
     if not return_value:
         raise VideoProcessingError('Unable to perform video_capture.grab(),'+
