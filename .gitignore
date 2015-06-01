@@ -7,3 +7,7 @@
 env/
 # Ignore python caches
 __pycache__/
+# Ignore the OpenCV build directory
+OpenCV/
+# Ignore video data folder
+videos
