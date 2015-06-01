@@ -17,3 +17,11 @@ def get_stereo_frame_from_video_capture(video_capture):
         raise VideoProcessingError('Unable to perform video_capture.grab(),'+
                                    '\nReturned False.')
     return video_capture.retrieve()
+
+
+def split_stereo_frame_into_left_and_right_frames(stereo_frame):
+    single_frame_width = stereo_frame.shape[1]/2
+    left_frame = stereo_frame[:, :single_frame_width, :]
+    right_frame = stereo_frame[:, single_frame_width:, :]
+    return left_frame, right_frame
+    
