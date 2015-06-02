@@ -128,3 +128,74 @@ computeDisparity(const Color * pixelsFullR,
     }
 
 }
+
+computeInitialDisparity(const float *** pixelsFullR,
+                        const Color *** pixelsHalfR,
+                        const Color *** pixelsQuartR,
+                        const Color *** pixelsFullL,
+                        const Color *** pixelsHalfL,
+                        const Color *** pixelsQuartL,
+                        const int sFull,
+                        const bool ** foregroundFullR,
+                        const bool ** foregroundHalfR,
+                        const bool ** foregroundQuarterR,
+                        const bool ** foregroundFullL,
+                        const bool ** foregroundHalfL,
+                        const bool ** foregroundQuarterL,
+                        float * disparityFull)
+{
+    int sQuart = sFull / 4.0; //sFull is the max window we would want for full res pixel block searching
+    float ** dQuarter = new int [h * v * 0.0625]; //Assuming h and v are divisible by 4
+    
+    for (int k = 0; k < IMAGE_HEIGHT/4; k++)
+    {
+        for (int i = 0; i < IMAGE_WIDTH/4; i++)
+        {
+            if (foregroundQuarterL[k][i] == 1)
+            {
+                int * matchingCost = new int [sQuart];
+                int max_j = 0;
+                for (int j = i; j < i + sQuart; j++)
+                {
+                    if (j+i >= (i+1)*h * 0.25) //Check if the index within windows is in pixel block row range
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if (foregroundQuarterR[i+j]==1)
+                        {
+                            matchingCost[j-i] = 0;
+                            for (int m = 0; m < 3; m++)
+                            {
+                                matchingCost[j-i] += square(pixelsQuartL[k][i][m] - pixelsQuartR[k][i+j][m]);
+                            }
+                            matchingCost[j-i] /= 3;
+                            float tempCost = sqrt(matchingCost[j-i]);
+                            matchingCost[j-i] = tempCost;
+                            max_j = j;
+                        }
+                        else
+                        {
+                            matchingCost[j-i] = 1000;// might have to also update max_j
+                        }
+                    }
+                }
+                float curr_min = 5000;
+                for (int l = 0; l <= max_j; l++)
+                {
+                    if (curr_min > matchingCost[l])
+                    {
+                        curr_min = matchingCost[l];
+                    }
+                }
+                dQuarter[k][i] = curr_min;
+                delete [] matchingCost;
+            }
+            else
+            {
+                dQuarter[k][i] = 20; //Decide on what to do for this case
+            }
+        }
+    }
+}
