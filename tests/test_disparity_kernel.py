@@ -5,7 +5,7 @@ def test_compute_disparity_returns_expected_results():
     import pycuda.driver as drv
     import numpy as np
     from pycuda.compiler import SourceModule
-    cuda_filename = 'src/computeDisparity.cu'
+    cuda_filename = 'cuda/computeDisparity.cu'
     cuda_kernel_source = open(cuda_filename, 'r').read()
     cuda_module = SourceModule(cuda_kernel_source)
 

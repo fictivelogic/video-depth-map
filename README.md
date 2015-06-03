@@ -7,7 +7,7 @@ Real-time video depth map generation using Python and CUDA.
 Pip-able dependencies are listed in `requirements.txt`. However, this project
 also depends on OpenCV.
 
-Because we are using Python3.4, we chose to use OpenCV 3.0.0-rc1, 
-compiled from source on Ubuntu 15.05 (x64). The installation script, opencv.sh, 
+Using Python3.4, we chose to use OpenCV 3.0.0-rc1,
+compiled from source on Ubuntu 15.04 (x64). The installation script, opencv.sh, 
 is available in `misc/`. 
 Script was obtained from https://help.ubuntu.com/community/OpenCV
