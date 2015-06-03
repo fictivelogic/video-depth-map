@@ -1,8 +1,8 @@
 #include <math.h>
 #include "computeFullDisparity.cu"
 
-#define IMAGE_HEIGHT 260
-#define IMAGE_WIDTH 360
+// #define IMAGE_HEIGHT 260
+// #define img_width 360
 
 __global__ void
 
@@ -13,24 +13,29 @@ computeHalfDisparity(const float * pixelsFullR,
                      float * dQuarter,
                      float * dHalf,
                      float * disparityFull,
+                     const int img_width,
+                     const int img_height,
                      const bool * foregroundFullR,
                      const bool * foregroundHalfR,
                      const bool * foregroundFullL,
                      const bool * foregroundHalfL)
 {
+    int ind_i = 8 * threadIdx.x + 64 * blockIdx.x;
+    int ind_j = threadIdx.y + 64 * blockIdx.y;
+    const int end_i = ind_i + 8;
 
-    for (int i = 0; i < IMAGE_WIDTH * IMAGE_HEIGHT/4; i++)
+    for (; i < end_i; i++)
     {
         if (foregroundHalfL[i]==1)
         {
             float * matchingCost = new float [5];
-            int k = ((i/(IMAGE_WIDTH/2) )/2) + ((i%(IMAGE_WIDTH/2) )/2);
+            int k = ((i/(img_width/2) )/2) + ((i%(img_width/2) )/2);
             int prevdisp = (int) floorf(dQuarter[k]);
             int initial_j = (2* prevdisp) -2;
             int max_j = 0;
             for (int j = initial_j; j <= initial_j + 4; j++)
             {
-                if ( (i % (IMAGE_WIDTH/2) != 0) && ((j+i) % (IMAGE_WIDTH/4)  == 0) )
+                if ( (i % (img_width/2) != 0) && ((j+i) % (img_width/4)  == 0) )
                 {
                     break;
                 }
@@ -41,7 +46,7 @@ computeHalfDisparity(const float * pixelsFullR,
                         matchingCost[j - initial_j] = 0;
                         for (int m = 0; m < 3; m++)
                         {
-                            matchingCost[j - initial_j] = square(pixelsQuartL[(3 * i) + m] - pixelsQuartR[(3*(i+j)) + m]);
+                            matchingCost[j - initial_j] = powf((pixelsQuartL[(3 * i) + m] - pixelsQuartR[(3*(i+j)) + m]),2);
                         }
                         matchingCost[j - initial_j] /= 3;
                         max_j = j - initial_j;
@@ -68,12 +73,5 @@ computeHalfDisparity(const float * pixelsFullR,
             dHalf[i] = 20;
         }
     }
-
-    computeFullDisparity(const float * pixelsFullR,
-                     const float * pixelsFullL,
-                     float * dHalf,
-                     float * disparityFull,
-                     const bool * foregroundFullR,
-                     const bool * foregroundFullL);
 
 }

@@ -1,8 +1,8 @@
 #include <math.h>
 #include "computeHalfDisparity.cu"
 
-#define IMAGE_HEIGHT 260
-#define IMAGE_WIDTH 360
+// #define IMAGE_HEIGHT 260
+// #define img_width 360
 
 __global__ void
 
@@ -20,6 +20,8 @@ computeInitialDisparity(const float * pixelsFullR,
                         float * dHalf,
                         float * disparityFull,
                         const int sFull,
+                        const int img_width,
+                        const int img_height,
                         const bool * foregroundFullR,
                         const bool * foregroundHalfR,
                         const bool * foregroundQuarterR,
@@ -27,9 +29,17 @@ computeInitialDisparity(const float * pixelsFullR,
                         const bool * foregroundHalfL,
                         const bool * foregroundQuarterL)
 {
+
     int sQuart = sFull / 4.0; //sFull is the max window we would want for full res pixel block searching
+
+    int ind_i = 8 * threadIdx.x + 64 * blockIdx.x;
+    int ind_j = threadIdx.y + 64 * blockIdx.y;
+    const int end_i = ind_i + 8;
+
+    int i = ind_i + (img_width * ind_j);
+
     
-    for (int i = 0; i < IMAGE_WIDTH * IMAGE_HEIGHT/ 16; i++)
+    for (; i <end_i; i++)
     {
         if (foregroundQuarterL[i] == 1)
         {
@@ -37,7 +47,7 @@ computeInitialDisparity(const float * pixelsFullR,
             int max_j = 0;
             for (int j = i; j <= i + sQuart; j++)
             {
-                if ( (i % (IMAGE_WIDTH/4) != 0) && ((j+i) % (IMAGE_WIDTH/4)  == 0) ) //Check if the index within windows is in pixel block row range
+                if ( (i % (img_width/4) != 0) && ((j+i) % (img_width/4)  == 0) ) //Check if the index within windows is in pixel block row range
                 {
                     break;
                 }
@@ -48,7 +58,7 @@ computeInitialDisparity(const float * pixelsFullR,
                         matchingCost[j-i] = 0;
                         for (int m = 0; m < 3; m++)
                         {
-                            matchingCost[j-i] += square(pixelsQuartL[(3*i)+m] - pixelsQuartR[(3*(i+j))+m]);
+                            matchingCost[j-i] += powf((pixelsQuartL[(3*i)+m] - pixelsQuartR[(3*(i+j))+m]), 2);
                         }
                         matchingCost[j-i] /= 3;
                         max_j = j-i;
@@ -75,17 +85,4 @@ computeInitialDisparity(const float * pixelsFullR,
             dQuarter[i] = 20; //Decide on what to do for this case
         }
     }
-
-    computeHalfDisparity(const float * pixelsFullR,
-                     const float * pixelsHalfR,
-                     const float * pixelsFullL,
-                     const float * pixelsHalfL,
-                     float * dQuarter,
-                     float * dHalf,
-                     float * disparityFull,
-                     const bool * foregroundFullR,
-                     const bool * foregroundHalfR,
-                     const bool * foregroundFullL,
-                     const bool * foregroundHalfL);
-
 }
