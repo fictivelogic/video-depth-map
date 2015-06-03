@@ -11,3 +11,5 @@ __pycache__/
 OpenCV/
 # Ignore video data folder
 videos
+# Ignore library folder (Compiled from CUDA/C sources in project)
+lib/
