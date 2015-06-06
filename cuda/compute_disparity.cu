@@ -46,7 +46,11 @@ __global__ void computeDisparity(
                 offset_pixel_index++;
             }
 
-            disparity_output[pixel_index] = min_cost_offset; // TODO: What exactly IS disparity?
+            if (min_matching_cost == STARTING_MATCHING_COST) {
+                disparity_output[pixel_index] = 0;
+            } else {
+                disparity_output[pixel_index] = powf(min_cost_offset, 2); //  + image_width;
+            }
         } else {
             disparity_output[pixel_index] = -1;
         }

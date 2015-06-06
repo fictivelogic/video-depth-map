@@ -13,3 +13,6 @@ OpenCV/
 videos
 # Ignore library folder (Compiled from CUDA/C sources in project)
 lib/
+# images? HA!
+*.jpg
+*.png

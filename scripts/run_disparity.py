@@ -13,7 +13,10 @@ import cv2
 
 
 if __name__=='__main__':
-    video_filename = 'Mukuge.avi'
+    if len(sys.argv) == 2:
+        video_filename = sys.argv[1]
+    else:
+        video_filename = 'Mukuge.avi'
     print('Loading {}...'.format(video_filename))
     video_obj = load_video_from_file_name(video_filename)
     success, stereo_image = get_stereo_frame_from_video_capture(video_obj)
@@ -34,6 +37,7 @@ if __name__=='__main__':
     )
     print('Got : ')
     print(disparity_img)
+    print(np.amax(disparity_img))
     cv2.imshow('Image:', left_img)
-    cv2.imshow('Disparity:', disparity_img.astype(np.uint8))
+    cv2.imshow('Disparity:', 5 * disparity_img.astype(np.uint8))
     cv2.waitKey(0)
