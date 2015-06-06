@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def cuda_compute_disparity(image_right, image_left,
@@ -6,10 +7,13 @@ def cuda_compute_disparity(image_right, image_left,
                            block_shape=(32, 1, 1),
                            grid_shape=(1, 1, 1)):
     assert image_left.shape == image_right.shape
+    if image_left.dtype == np.uint8:
+        print('converting Uint8 image to float32')
+        image_left = image_left.astype(np.float32)
+        image_right = image_right.astype(np.float32)
     import pycuda.autoinit
     import pycuda.driver as drv
     from pycuda.compiler import SourceModule
-    import numpy as np
     cuda_filename = 'cuda/compute_disparity.cu'
     cuda_kernel_source = open(cuda_filename, 'r').read()
     cuda_module = SourceModule(cuda_kernel_source)

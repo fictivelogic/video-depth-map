@@ -13,13 +13,12 @@ __global__ void computeDisparity(
     const int window_size, // size of window used for block searching
     const int image_height, // height of the image, in pixels
     const int image_width, // width of the image, in pixels
-    const bool * foregroundR, // Array of foreground flags for each pixel in imageR
-    const bool * foregroundL, // Array of foreground flags for each pixel in imageL
+    const char * foregroundR, // Array of foreground flags for each pixel in imageR
+    const char * foregroundL, // Array of foreground flags for each pixel in imageL
     float * disparity_output) // Output array (same dim as imageR/L) of disparity values
 {
     // Local variables:
     long int pixel_index = blockIdx.x * blockDim.x + threadIdx.x; // Index of current pixel
-    // TODO: Assign proper indexing   
     float matching_cost = 0.0;
     float min_matching_cost = STARTING_MATCHING_COST;
     long int min_cost_offset = 0; 
@@ -27,7 +26,7 @@ __global__ void computeDisparity(
 
     while(pixel_index < image_height * image_width) { 
         // while... the thread index hasn't gone outside the image dimensions
-        if (foregroundL[pixel_index] == 1) {
+        if (true) { //foregroundL[pixel_index] == 1) {
             // Calculate matching cost for this foreground pixel
             // ensure that we are not going over the end of the pixel row
             offset_pixel_index = pixel_index;
