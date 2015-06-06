@@ -41,3 +41,5 @@ if __name__=='__main__':
     cv2.imshow('Image:', left_img)
     cv2.imshow('Disparity:', 5 * disparity_img.astype(np.uint8))
     cv2.waitKey(0)
+    video_obj.release()
+
