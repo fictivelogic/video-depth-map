@@ -11,3 +11,5 @@ Using Python3.4, we chose to use OpenCV 3.0.0-rc1,
 compiled from source on Ubuntu 15.04 (x64). The installation script, opencv.sh, 
 is available in `misc/`. 
 Script was obtained from https://help.ubuntu.com/community/OpenCV
+
+NOTE: We recommend using a virtualenv to utilize the package. Using virtualenv, you will need to `pip install numpy` before running `pip install -r requirements.txt`.
