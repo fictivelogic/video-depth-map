@@ -9,6 +9,7 @@ from utils.video_utils import (load_video_from_file_name,
 from utils.py_cuda_interface import cuda_compute_disparity
 import numpy as np
 import cv2
+import math
 
 
 
@@ -33,7 +34,7 @@ if __name__=='__main__':
                                  dtype=np.uint8),
         window_size=20,
         block_shape=(512, 1, 1),
-        grid_shape=(1024, 1, 1)
+        grid_shape=(math.ceil(left_img.shape[0]* left_img.shape[1]/512), 1, 1)
     )
     print('Got : ')
     print(disparity_img)
