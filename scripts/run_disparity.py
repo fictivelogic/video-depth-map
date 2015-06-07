@@ -25,12 +25,13 @@ if __name__=='__main__':
     left_img, right_img = split_stereo_frame_into_left_and_right_frames(
         stereo_frame=stereo_image
     )
+    print('Computing background mask...')
+    bg_mask = compute_background_mask(left_img, right_img)
     print('Computing disparity on GPU...')
     disparity_img = cuda_compute_disparity(
         image_left=left_img,
         image_right=right_img,
-        foreground_left=np.ones(shape=(left_img.shape[0:1]),
-                                dtype=np.uint8),
+        foreground_left=bg_mask,
         foreground_right=np.ones(shape=(left_img.shape[0:1]),
                                  dtype=np.uint8),
         window_size=20,
@@ -42,7 +43,9 @@ if __name__=='__main__':
     print(np.amax(disparity_img))
     cv2.imshow('Image:', left_img)
     cv2.imshow('Disparity:', 5 * disparity_img.astype(np.uint8))
-    cv2.imshow('FG Mask: ', compute_background_mask(left_img, right_img))
+    bg_maskR = compute_background_mask(right_img, left_img)
+    cv2.imshow('FG L Mask: ', bg_mask)
+    cv2.imshow('FG R Mask: ', bg_maskR)
     cv2.waitKey(0)
     video_obj.release()
 

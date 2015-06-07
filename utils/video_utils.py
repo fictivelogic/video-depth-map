@@ -28,6 +28,11 @@ def split_stereo_frame_into_left_and_right_frames(stereo_frame):
 
 def compute_background_mask(left_image, right_image):
     from cv2.bgsegm import createBackgroundSubtractorMOG
-    bgSub = createBackgroundSubtractorMOG(1)
+    from cv2 import dilate, erode, getStructuringElement
+    bgSub = createBackgroundSubtractorMOG()
     bgSub.apply(left_image)
-    return bgSub.apply(right_image)
+    bg_mask = bgSub.apply(right_image)
+    # Dilate
+    kernel = getStructuringElement(cv2.MORPH_RECT, (30, 30))
+    dilated = dilate(bg_mask, kernel)
+    return dilated
