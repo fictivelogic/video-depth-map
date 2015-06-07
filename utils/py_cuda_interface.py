@@ -16,29 +16,31 @@ def cuda_compute_disparity(image_right, image_left,
     import pycuda.driver as drv
     from pycuda.compiler import SourceModule
 
-    image_left_half = cv2.resize(image_left, (0, 0), 0.5, 0.5)
-    image_right_half = cv2.resize(image_right, (0, 0), 0.5, 0.5)
-    image_left_quarter = cv2.resize(image_left_half, (0, 0), 0.5, 0.5)
-    image_right_quarter = cv2.resize(image_right_half, (0, 0), 0.5, 0.5)
+    #Making lower resolution right and left images
+
+    image_left_half = cv2.resize(image_left, dsize = (image_left.shape[0]//2, image_left.shape[1]//2))
+    image_right_half = cv2.resize(image_right, dsize = (image_right.shape[0]//2, image_right.shape[1]//2))
+    image_left_quarter = cv2.resize(image_left_half, dsize = (image_left_half.shape[0]//2, image_left_half.shape[1]//2))
+    image_right_quarter = cv2.resize(image_right_half, dsize = (image_right_half.shape[0]//2, image_right_half.shape[1]//2))
 
     cuda_filename = 'cuda/compute_disparity.cu'
     cuda_kernel_source = open(cuda_filename, 'r').read()
     cuda_module = SourceModule(cuda_kernel_source)
     compute_disparity = cuda_module.get_function('computeDisparity')
 
-    cuda_filename = 'cuda/compute_disparity_higher.cu'
-    cuda_kernel_source = open(cuda_filename, 'r').read()
-    cuda_module = SourceModule(cuda_kernel_source)
-    compute_disparity_higher = cuda_module.get_function('computeDisparityHigher')
+    # cuda_filename = 'cuda/compute_disparity_higher.cu'
+    # cuda_kernel_source = open(cuda_filename, 'r').read()
+    # cuda_module = SourceModule(cuda_kernel_source)
+    # compute_disparity_higher = cuda_module.get_function('computeDisparityHigher')
 
 
-    img_height = image_left.shape[0]
-    img_width = image_left.shape[1]
+    img_height = image_left_quarter.shape[0]
+    img_width = image_left_quarter.shape[1]
 
     calculated_disparity = np.zeros(shape=(img_height, img_width), dtype=np.float32)
     compute_disparity(
-        drv.In(image_left),
-        drv.In(image_right),
+        drv.In(image_left_quarter),
+        drv.In(image_right_quarter),
         np.int32(window_size),
         np.int32(img_height),
         np.int32(img_width),
