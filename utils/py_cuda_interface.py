@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import math
 
 
 def cuda_compute_disparity(image_right, image_left,
@@ -28,10 +29,10 @@ def cuda_compute_disparity(image_right, image_left,
     cuda_module = SourceModule(cuda_kernel_source)
     compute_disparity = cuda_module.get_function('computeDisparity')
 
-    # cuda_filename = 'cuda/compute_disparity_higher.cu'
-    # cuda_kernel_source = open(cuda_filename, 'r').read()
-    # cuda_module = SourceModule(cuda_kernel_source)
-    # compute_disparity_higher = cuda_module.get_function('computeDisparityHigher')
+    cuda_filename = 'cuda/compute_disparity_higher.cu'
+    cuda_kernel_source = open(cuda_filename, 'r').read()
+    cuda_module = SourceModule(cuda_kernel_source)
+    compute_disparity_higher = cuda_module.get_function('computeDisparityHigher')
 
 
     img_height = image_left_quarter.shape[0]
@@ -48,6 +49,45 @@ def cuda_compute_disparity(image_right, image_left,
         drv.In(foreground_left),
         drv.Out(calculated_disparity),
         block=block_shape,
-        grid=grid_shape
+        grid=( math.ceil(grid_shape[0]/16), grid_shape[1], grid_shape[2])
     )
+
+    lower_res_diaparity = calculated_disparity
+
+    img_height = image_left_half.shape[0]
+    img_width = image_left_half.shape[1]
+
+    calculated_disparity_higher = np.zeros(shape=(img_height, img_width), dtype=np.float32)
+    compute_disparity(
+        drv.In(image_left_half),
+        drv.In(image_right_half),
+        np.int32(img_height),
+        np.int32(img_width),
+        drv.In(foreground_right),
+        drv.In(foreground_left),
+        drv.In(lower_res_diaparity),
+        drv.Out(calculated_disparity),
+        block=block_shape,
+        grid=( math.ceil(grid_shape[0]/4), grid_shape[1], grid_shape[2])
+    )
+
+    lower_res_diaparity = calculated_disparity
+
+    img_height = image_left.shape[0]
+    img_width = image_left.shape[1]
+
+    calculated_disparity_higher = np.zeros(shape=(img_height, img_width), dtype=np.float32)
+    compute_disparity(
+        drv.In(image_left),
+        drv.In(image_right),
+        np.int32(img_height),
+        np.int32(img_width),
+        drv.In(foreground_right),
+        drv.In(foreground_left),
+        drv.In(lower_res_diaparity),
+        drv.Out(calculated_disparity),
+        block=block_shape,
+        grid= grid_shape
+    )
+
     return calculated_disparity

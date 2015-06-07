@@ -6,7 +6,7 @@ struct pixel {
     float B;
 };
 
-__global__ void computeDisparity(
+__global__ void computeDisparityHigher(
     const struct pixel * imageR, 
     const struct pixel * imageL,
     const int image_height,
@@ -31,7 +31,7 @@ __global__ void computeDisparity(
             offset_pixel_index = pixel_index;
             min_matching_cost = STARTING_MATCHING_COST;
             min_cost_offset = 0;
-            for (int offset = 0; offset < window_size; offset++) { 
+            for (int offset = (int) (2*disparity_input[((pixel_index % (image_width))/2) + (((pixel_index/image_width)/2) * (image_width/2))]) -2; offset <= (int) (2*disparity_input[((pixel_index % (image_width))/2) + (((pixel_index/image_width)/2) * (image_width/2))]) +2; offset++) { 
                 if ((pixel_index % image_width) + offset >= image_width) {
                     break;
                 }
