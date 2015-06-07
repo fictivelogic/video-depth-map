@@ -25,3 +25,9 @@ def split_stereo_frame_into_left_and_right_frames(stereo_frame):
     right_frame = stereo_frame[:, single_frame_width:, :]
     return left_frame, right_frame
     
+
+def compute_background_mask(left_image, right_image):
+    from cv2.bgsegm import createBackgroundSubtractorMOG
+    bgSub = createBackgroundSubtractorMOG(1)
+    bgSub.apply(left_image)
+    return bgSub.apply(right_image)
