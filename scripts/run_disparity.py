@@ -4,8 +4,10 @@ import sys
 sys.path.append(abspath(dirname(dirname(__file__))))
 
 from utils.video_utils import (load_video_from_file_name,
-    get_stereo_frame_from_video_capture,
-    split_stereo_frame_into_left_and_right_frames)
+                               get_stereo_frame_from_video_capture,
+                               split_stereo_frame_into_left_and_right_frames,
+                               compute_background_mask)
+
 from utils.py_cuda_interface import cuda_compute_disparity
 import numpy as np
 import cv2
@@ -30,6 +32,8 @@ if __name__=='__main__':
         left_img, right_img = split_stereo_frame_into_left_and_right_frames(
             stereo_frame=stereo_image
         )
+        print('Computing background mask...')
+        bg_mask = compute_background_mask(left_img, right_img)
         print('Computing disparity on GPU...')
         disparity_img = cuda_compute_disparity(
             image_left=left_img,
