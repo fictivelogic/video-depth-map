@@ -16,10 +16,10 @@ def cuda_compute_disparity(image_right, image_left,
     import pycuda.driver as drv
     from pycuda.compiler import SourceModule
 
-    image_left_half = cv2.resize(image_left, 0.5, 0.5)
-    image_right_half = cv2.resize(image_right, 0.5, 0.5)
-    image_left_quarter = cv2.resize(image_left_half, 0.5, 0.5)
-    image_right_quarter = cv2.resize(image_right_half, 0.5, 0.5)
+    image_left_half = cv2.resize(image_left, (0, 0), 0.5, 0.5)
+    image_right_half = cv2.resize(image_right, (0, 0), 0.5, 0.5)
+    image_left_quarter = cv2.resize(image_left_half, (0, 0), 0.5, 0.5)
+    image_right_quarter = cv2.resize(image_right_half, (0, 0), 0.5, 0.5)
 
     cuda_filename = 'cuda/compute_disparity.cu'
     cuda_kernel_source = open(cuda_filename, 'r').read()
