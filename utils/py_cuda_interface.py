@@ -4,7 +4,7 @@ import numpy as np
 def cuda_compute_disparity(image_right, image_left,
                            window_size, foreground_right,
                            foreground_left,
-                           block_shape=(32, 1, 1),
+                           block_shape=(512, 1, 1),
                            grid_shape=(1, 1, 1)):
     assert image_left.shape == image_right.shape
     if image_left.dtype == np.uint8:
