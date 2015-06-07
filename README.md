@@ -2,6 +2,15 @@
 
 Real-time video depth map generation using Python and CUDA.
 
+### Run Instructions:
+
+While in project root;
+
+	python scripts/run_disparity.py <stereo-video>
+
+	NOTE: stereo-video has to be located in $PROJECTROOT/videos/ subdirectory
+		  video must also be a juxtapose stereo video pair
+
 ### Dependencies:
 
 Pip-able dependencies are listed in `requirements.txt`. However, this project
